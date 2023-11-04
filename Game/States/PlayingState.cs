@@ -15,6 +15,7 @@ namespace Game.States
         private uint _windowWidth;
         private EntityManager _entityManager;
         private MapGenerationSystem _mapGenerationSystem;
+        private ChunkRenderSystem _chunkRenderSystem;
         private RenderSystem _renderSystem;
 
         // Constructor that takes a GameStateMachine
@@ -25,11 +26,15 @@ namespace Game.States
             _entityManager = new EntityManager();
             _mapGenerationSystem = new MapGenerationSystem(_entityManager);
             _renderSystem = new RenderSystem(_entityManager);
+            _chunkRenderSystem = new ChunkRenderSystem(_entityManager);
         }
 
         public void Enter()
         {
-            _mapGenerationSystem.GenerateMapPreview(128, 128);
+            // Generate a chunk at the specified position and size
+            int chunkEntityId = _mapGenerationSystem.GenerateChunk(0, 0, 64); // Generate a chunk at (0,0) with size 64x64
+
+            _entityManager.AddComponent(chunkEntityId, new GeneratedComponent());
         }
 
         public void Update(float deltaTime)
@@ -44,13 +49,13 @@ namespace Game.States
 
         public void Draw(RenderWindow window)
         {
-            _renderSystem.Draw(window);
+            _chunkRenderSystem.Draw(window);
         }
 
         public void Exit()
         {
             // Clean up entities and systems
-            _entityManager.ClearAllEntities(); // You would need to implement this method
+            _entityManager.ClearAllEntities();
         }
     }
 }

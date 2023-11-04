@@ -36,9 +36,6 @@ namespace Game.Systems
                     // Determine the tile type based on the noise value
                     TileType tileType = GetTileTypeFromNoise(noiseValue);
 
-                    // Output for debugging
-                    //Console.WriteLine($"Position: ({x},{y}) Noise Value: {noiseValue} Tile Type: {tileType}");
-
                     // Create a new entity for the tile
                     int entityId = _entityManager.CreateEntity();
                     _entityManager.AddComponent(entityId, new PositionComponent { X = x, Y = y });
@@ -46,6 +43,46 @@ namespace Game.Systems
                     _entityManager.AddComponent(entityId, new RenderComponent { Color = GetColorForTileType(tileType) });
                 }
             }
+        }
+
+        public int GenerateChunk(int chunkX, int chunkY, int chunkSize)
+        {
+            // Create a new entity for the chunk
+            int chunkEntityId = _entityManager.CreateEntity();
+
+            // Initialize the ChunkComponent
+            ChunkComponent chunkComponent = new ChunkComponent(chunkSize, chunkX, chunkY);
+            _entityManager.AddComponent(chunkEntityId, chunkComponent);
+
+            // Calculate world position offset based on the chunk position and size
+            int worldXOffset = chunkX * chunkSize;
+            int worldYOffset = chunkY * chunkSize;
+
+            // Generate tiles within this chunk
+            for (int x = 0; x < chunkSize; x++)
+            {
+                for (int y = 0; y < chunkSize; y++)
+                {
+                    // Get the noise value for the current world position
+                    float noiseValue = _noise.GetNoise(worldXOffset + x, worldYOffset + y);
+
+                    // Determine the tile type based on the noise value
+                    TileType tileType = GetTileTypeFromNoise(noiseValue);
+
+                    // Create a new entity for the tile
+                    int tileEntityId = _entityManager.CreateEntity();
+                    _entityManager.AddComponent(tileEntityId, new PositionComponent { X = worldXOffset + x, Y = worldYOffset + y });
+                    _entityManager.AddComponent(tileEntityId, new TileComponent { Type = tileType });
+                    _entityManager.AddComponent(tileEntityId, new RenderComponent { Color = GetColorForTileType(tileType) });
+
+                    // Store the tile entity ID in the chunk component
+                    chunkComponent.SetTileEntity(x, y, tileEntityId);
+                }
+            }
+
+            // Update the chunk component with all the tile entity IDs
+            _entityManager.UpdateComponent(chunkEntityId, chunkComponent);
+            return chunkEntityId;
         }
 
         public void GenerateMapPreview(int width, int height)

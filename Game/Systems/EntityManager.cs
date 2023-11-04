@@ -89,7 +89,52 @@ namespace Game.Systems
             return componentsByEntity.Keys;
         }
 
+        public void UpdateComponent<T>(int entityId, T component)
+        {
+            var type = typeof(T);
+            if (!componentTypeByEntity.ContainsKey(type) || !componentTypeByEntity[type].ContainsKey(entityId))
+            {
+                throw new Exception($"Entity {entityId} does not have component of type {type} to update.");
+            }
+
+            // Update the component in the type dictionary
+            componentTypeByEntity[type][entityId] = component;
+
+            // Find and update the component in the list of components for the entity
+            var componentsList = componentsByEntity[entityId];
+            for (int i = 0; i < componentsList.Count; i++)
+            {
+                if (componentsList[i].GetType() == type)
+                {
+                    componentsList[i] = component;
+                    return; // Exit the method once the component is updated
+                }
+            }
+        }
+
+        public void RemoveComponent<T>(int entityId)
+        {
+            var type = typeof(T);
+            if (!componentTypeByEntity.ContainsKey(type) || !componentTypeByEntity[type].ContainsKey(entityId))
+            {
+                throw new Exception($"Entity {entityId} does not have component of type {type} to remove.");
+            }
+
+            // Remove the component from the type dictionary
+            componentTypeByEntity[type].Remove(entityId);
+
+            // Find and remove the component from the list of components for the entity
+            var componentsList = componentsByEntity[entityId];
+            for (int i = 0; i < componentsList.Count; i++)
+            {
+                if (componentsList[i].GetType() == type)
+                {
+                    componentsList.RemoveAt(i);
+                    return; // Exit the method once the component is removed
+                }
+            }
+        }
+
         // Other methods to remove components and entities...
     }
-
 }

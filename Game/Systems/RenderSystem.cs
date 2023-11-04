@@ -68,10 +68,10 @@ namespace Game.Systems
                         RenderComponent render = entityManager.GetComponent<RenderComponent>(entity);
 
                         // Draw the tile (as a rectangle for now)
-                        RectangleShape tileShape = new RectangleShape(new Vector2f(1, 1))
+                        RectangleShape tileShape = new RectangleShape(new Vector2f(16, 16))
                         {
                             FillColor = render.Color,
-                            Position = new Vector2f(position.X * 1, position.Y * 1) // Assuming each tile is 32x32 pixels
+                            Position = new Vector2f(position.X * 16, position.Y * 16) // Assuming each tile is 16x16 pixels
                         };
 
                         window.Draw(tileShape);
