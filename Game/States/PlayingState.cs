@@ -29,7 +29,7 @@ namespace Game.States
 
         public void Enter()
         {
-            _mapGenerationSystem.GenerateMapPreview(768, 768);
+            _mapGenerationSystem.GenerateMapPreview(128, 128);
         }
 
         public void Update(float deltaTime)

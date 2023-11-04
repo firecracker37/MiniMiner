@@ -20,7 +20,7 @@ namespace Game
 
         public Game()
         {
-            _window = new RenderWindow(new VideoMode(800, 600), "SFML.Net Game");
+            _window = new RenderWindow(new VideoMode(1600, 900), "SFML.Net Game");
             _window.Closed += (_, _) => _window.Close();
             _stateMachine = new GameStateMachine();
             _clock = new Clock();

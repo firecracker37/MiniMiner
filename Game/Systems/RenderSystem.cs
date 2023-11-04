@@ -26,6 +26,33 @@ namespace Game.Systems
             {
                 MapPreviewComponent preview = entityManager.GetComponent<MapPreviewComponent>(mapPreviewEntity);
                 Sprite previewSprite = new Sprite(preview.PreviewTexture);
+
+                // Calculate the scale factors
+                float windowWidth = window.Size.X;
+                float windowHeight = window.Size.Y;
+                float imageWidth = preview.PreviewTexture.Size.X;
+                float imageHeight = preview.PreviewTexture.Size.Y;
+
+                // Determine the scale to maintain aspect ratio
+                float scaleX = windowWidth / imageWidth;
+                float scaleY = windowHeight / imageHeight;
+                float scale = Math.Min(scaleX, scaleY);
+
+                // Apply the scale
+                previewSprite.Scale = new Vector2f(scale, scale);
+
+                // Center the sprite in the window if it's smaller than the window
+                if (scale < scaleX)
+                {
+                    float scaledWidth = imageWidth * scale;
+                    previewSprite.Position = new Vector2f((windowWidth - scaledWidth) / 2, 0);
+                }
+                else if (scale < scaleY)
+                {
+                    float scaledHeight = imageHeight * scale;
+                    previewSprite.Position = new Vector2f(0, (windowHeight - scaledHeight) / 2);
+                }
+
                 window.Draw(previewSprite);
             }
 

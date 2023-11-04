@@ -2,13 +2,7 @@
 using Game.Utilities;
 using SFML.Graphics;
 using SFML.System;
-using SFML.Window;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Game.Systems
 {
@@ -92,7 +86,7 @@ namespace Game.Systems
             TimeSpan timeTaken = stopwatch.Elapsed; // Get the elapsed time
 
             // Output the results
-            Console.WriteLine($"Map generation took {timeTaken.TotalMilliseconds} milliseconds.");
+            Console.WriteLine($"Generated {width * height} tiles in {timeTaken.TotalMilliseconds} milliseconds.");
             Console.WriteLine($"Memory used for map generation: {memoryUsed / 1024.0 / 1024.0} MB.");
 
             // Create an entity for the map preview
