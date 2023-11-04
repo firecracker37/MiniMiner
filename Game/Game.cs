@@ -26,7 +26,7 @@ namespace Game
             _clock = new Clock();
 
             // Pass the state machine to states so they can request transitions
-            _stateMachine.ChangeState(new MainMenuState(_stateMachine, _window.Size.X));
+            _stateMachine.ChangeState(new MainMenuState(_stateMachine, _window));
         }
 
         public void Run()

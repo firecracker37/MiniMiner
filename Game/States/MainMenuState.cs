@@ -16,13 +16,13 @@ namespace Game.States
         private Text _titleText;
         private Font _actionFont;
         private Text _actionText;
-        private uint _windowWidth;
+        private RenderWindow _window;
 
         // Constructor that takes a GameStateMachine
-        public MainMenuState(GameStateMachine stateMachine, uint windowWidth)
+        public MainMenuState(GameStateMachine stateMachine, RenderWindow window)
         {
             _stateMachine = stateMachine;
-            _windowWidth = windowWidth; // Store the window width
+            _window = window;
         }
 
         public void Enter() 
@@ -47,11 +47,11 @@ namespace Game.States
             // Center the text horizontally
             FloatRect textRect = _titleText.GetLocalBounds();
             _titleText.Origin = new Vector2f(textRect.Left + textRect.Width / 2.0f, textRect.Top + textRect.Height / 2.0f);
-            _titleText.Position = new Vector2f(_windowWidth / 2.0f, 100); // Assuming you want to place it at 100 pixels from the top
+            _titleText.Position = new Vector2f(_window.Size.X / 2.0f, 100); // Assuming you want to place it at 100 pixels from the top
 
             FloatRect actionRect = _actionText.GetLocalBounds();
             _actionText.Origin = new Vector2f(actionRect.Left + actionRect.Width / 2.0f, actionRect.Top + actionRect.Height / 2.0f);
-            _actionText.Position = new Vector2f(_windowWidth / 2.0f, 250);
+            _actionText.Position = new Vector2f(_window.Size.X / 2.0f, 250);
         }
         public void Update(float deltaTime) 
         {
@@ -70,7 +70,7 @@ namespace Game.States
                 if (actionRect.Contains(mousePosition.X, mousePosition.Y))
                 {
                     // Change to the PlayingState
-                    _stateMachine.ChangeState(new PlayingState(_stateMachine, _windowWidth));
+                    _stateMachine.ChangeState(new PlayingState(_stateMachine, _window));
                 }
             }
         }
