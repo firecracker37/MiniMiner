@@ -77,8 +77,8 @@ namespace Game.Systems
 
             // Ensure the camera stays within bounds
             // You would need to define bounds based on your world size
-            cameraComponent.Position.X = Math.Clamp(cameraComponent.Position.X, cameraComponent.Bounds.Left, cameraComponent.Bounds.Left + cameraComponent.Bounds.Width);
-            cameraComponent.Position.Y = Math.Clamp(cameraComponent.Position.Y, cameraComponent.Bounds.Top, cameraComponent.Bounds.Top + cameraComponent.Bounds.Height);
+            //cameraComponent.Position.X = Math.Clamp(cameraComponent.Position.X, cameraComponent.Bounds.Left, cameraComponent.Bounds.Left + cameraComponent.Bounds.Width);
+            //cameraComponent.Position.Y = Math.Clamp(cameraComponent.Position.Y, cameraComponent.Bounds.Top, cameraComponent.Bounds.Top + cameraComponent.Bounds.Height);
 
             // Update the camera component
             _entityManager.UpdateComponent(cameraEntity, cameraComponent);

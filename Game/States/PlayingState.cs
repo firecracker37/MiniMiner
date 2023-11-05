@@ -17,9 +17,10 @@ namespace Game.States
         private RenderWindow _window;
         private EntityManager _entityManager;
         private MapGenerationSystem _mapGenerationSystem;
-        private ChunkRenderSystem _chunkRenderSystem;
+        private RenderSystem _renderSystem;
         private CameraZoomSystem _cameraZoomSystem;
         private CameraMovementSystem _cameraMovementSystem;
+        private ChunkManagementSystem _chunkManagementSystem;
 
         // Constructor that takes a GameStateMachine
         public PlayingState(GameStateMachine stateMachine, RenderWindow window)
@@ -28,16 +29,27 @@ namespace Game.States
             _window = window;
             _entityManager = new EntityManager();
             _mapGenerationSystem = new MapGenerationSystem(_entityManager);
-            _chunkRenderSystem = new ChunkRenderSystem(_entityManager);
+            _renderSystem = new RenderSystem(_entityManager);
             _cameraZoomSystem = new CameraZoomSystem(_entityManager, _window);
             _cameraMovementSystem = new CameraMovementSystem(_entityManager, _window);
+            _chunkManagementSystem = new ChunkManagementSystem(_entityManager, _mapGenerationSystem);
         }
 
         public void Enter()
         {
-            // Generate a chunk at the specified position and size
-            int chunkEntityId = _mapGenerationSystem.GenerateChunk(0, 0, 64); // Generate a chunk at (0,0) with size 64x64
-            _entityManager.AddComponent(chunkEntityId, new GeneratedComponent());
+            Console.WriteLine("Constructing PlayingState Started...");
+            // Define the initial grid size
+            const int initialGridRadius = 2; // This will generate a 3x3 grid
+
+            // Generate the initial grid of chunks
+            for (int x = -initialGridRadius; x <= initialGridRadius; x++)
+            {
+                for (int y = -initialGridRadius; y <= initialGridRadius; y++)
+                {
+                    var chunkEntityId = _mapGenerationSystem.GenerateChunk(x, y, 64);
+                    _entityManager.AddComponent(chunkEntityId, new GeneratedComponent());
+                }
+            }
 
             // Calculate chunk dimensions in pixels
             int chunkPixelSize = 64 * 16;
@@ -47,22 +59,36 @@ namespace Game.States
             _entityManager.AddComponent(cameraEntityId, new CameraComponent
             {
                 Position = new Vector2f(chunkPixelSize / 2f, chunkPixelSize / 2f), // Center of the chunk
-                ViewSize = new Vector2f(_window.Size.X, _window.Size.Y), // Assuming a window size or desired view size of 800x600
+                ViewSize = new Vector2f(_window.Size.X, _window.Size.Y), 
                 ZoomLevel = 1.0f, // Default zoom level
                 MinZoom = 0.25f,   // Minimum zoom level
                 MaxZoom = 4.0f,    // Maximum zoom level
                 PanningSpeed = 300f, // Speed at which the camera pans, adjust as needed
-                Bounds = new FloatRect(0, 0, _window.Size.X * 2, _window.Size.Y *2) // Adding some extra space around the chunk
+                Bounds = new FloatRect(0, 0, _window.Size.X * 20, _window.Size.Y *20) // Adding some extra space around the chunk
             });
 
             _entityManager.AddComponent(cameraEntityId, new MainCameraComponent()); // Mark this as the main camera
 
             SetupEventHandlers(_window);
+            Console.WriteLine("Completed PlayingState Construction...");
         }
 
         public void Update(float deltaTime)
         {
             _cameraMovementSystem.Update(deltaTime);
+
+            // Get the main camera entity
+            var cameraEntity = _entityManager.GetAllEntitiesWithComponent<CameraComponent>()
+                                             .FirstOrDefault(entity => _entityManager.HasComponent<MainCameraComponent>(entity));
+
+            if (cameraEntity != default)
+            {
+                // Get the camera component
+                CameraComponent cameraComponent = _entityManager.GetComponent<CameraComponent>(cameraEntity);
+
+                // Pass the camera position to the chunk management system
+                _chunkManagementSystem.Update(cameraComponent.Position);
+            }
         }
 
         public void HandleInput(RenderWindow window)
@@ -72,7 +98,7 @@ namespace Game.States
 
         public void Draw(RenderWindow window)
         {
-            _chunkRenderSystem.Draw(window);
+            _renderSystem.Draw(window);
         }
 
         public void Exit()

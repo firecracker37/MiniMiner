@@ -61,6 +61,7 @@ namespace Game.Systems
 
             // Update the chunk component with all the tile entity IDs
             _entityManager.UpdateComponent(chunkEntityId, chunkComponent);
+            Console.WriteLine($"Created new chunk with ID: {chunkEntityId} at ({chunkComponent.ChunkX},{chunkComponent.ChunkY})");
             return chunkEntityId;
         }
 
